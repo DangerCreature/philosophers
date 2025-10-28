@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   helpers1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gwolfrum <gwolfrum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/16 14:00:10 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/06/04 09:44:18 by gwolfrum         ###   ########.fr       */
+/*   Created: 2025/10/28 11:05:06 by gwolfrum          #+#    #+#             */
+/*   Updated: 2025/10/28 11:52:48 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isdigit(int c);
+#include "philos.h"
 
 static int	ft_isspace(unsigned char c)
 {
@@ -19,13 +19,27 @@ static int	ft_isspace(unsigned char c)
 	return (0);
 }
 
-int	ft_atoi(const char *nptr)
+int	ft_isdigit(int c)
 {
-	int	out;
-	int	sign;
+	if ('0' <= c && c <= '9')
+	{
+		return (1);
+	}
+	else
+	{
+		return (0);
+	}
+}
+
+int	safe_atoi(const char *nptr)
+{
+	long	out;
+	int		sign;
 
 	out = 0;
 	sign = 1;
+	if (!nptr)
+		return (ERROR_NUM);
 	while (ft_isspace((unsigned char)*nptr))
 		nptr++;
 	if ((unsigned char)*nptr == '-' || (unsigned char)*nptr == '+')
@@ -37,7 +51,11 @@ int	ft_atoi(const char *nptr)
 	while (ft_isdigit(*nptr) == 1)
 	{
 		out = (10 * out) + *nptr - '0';
+		if (out < -2147483648)
+			return (ERROR_NUM);
 		nptr++;
 	}
-	return (sign * out);
+	if (*nptr || out * sign > 2147483647)
+		return (ERROR_NUM);
+	return ((int)(sign * out));
 }

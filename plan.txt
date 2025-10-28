@@ -1,0 +1,13 @@
+To Dos
+
+	initializing pholosopher structs
+
+	handeling of forks(tools to eat)
+
+	philosphers routine
+
+	handeling of death
+
+	handeling of sleep
+
+number_of_philosophers time_to_die time_to_eat time_to_sleep
