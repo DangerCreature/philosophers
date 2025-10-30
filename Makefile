@@ -6,8 +6,14 @@ CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 SRC += helpers1.c
 SRC += main.c
+SRC += init.c
+SRC += cleanup.c
+SRC += forks.c
+SRC += rutine.c
 
 OBJ = $(SRC:.c=.o)
+
+all: $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -23,4 +29,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: clean fclean re
+.PHONY: all clean fclean re
