@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 18:10:15 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/10/31 18:22:41 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/03 12:11:27 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,27 @@ int	safe_atoi(const char *nptr)
 		return (ERROR_NUM);
 	return ((int)(sign * out));
 }
-/*
-int	status_update(t_philo philo, int status_type)
+
+long	now(void)
+{
+	struct timeval	t_now;
+	long			now;
+
+	if (gettimeofday(&t_now, NULL) == -1)
+		now = -1;
+	else
+		now = t_now.tv_sec * 1000 + t_now.tv_usec / 1000;
+	return (now);
+}
+
+void	status_update(t_philo philo, int status_type, char *error_msg)
 {
 	long	timestmp;
 	int		out;
 
 	out = 0;
-	timestmp = philo.tabel->now - philo.tabel->time;
-	pthread_mutex_lock(&philo.tabel->write_mutex);
+	timestmp = now() - philo.time;
+	sem_wait(philo.tabelptr->write_mutex);
 	if (status_type == FORK_GRAB)
 		out = printf("%ld	%d has taken a fork\n", timestmp, philo.idx + 1);
 	else if (status_type == FORK_RETURN)
@@ -82,22 +94,11 @@ int	status_update(t_philo philo, int status_type)
 		out = printf("%ld	%d died\n", timestmp, philo.idx + 1);
 	else if (status_type == IT_IS_ENOUGH)
 		out = printf("%ld	we have eaten enough\n", timestmp);
-	pthread_mutex_unlock(&philo.tabel->write_mutex);
-	return (out < 0);
+	else if (status_type == ERROR_NUM)
+		out = printf("	Error: %s\n", error_msg);
+	sem_post(philo.tabelptr->write_mutex);
+	if (out < 0)
+	{
+		chiald_die(philo);
+	}
 }
-
-int	set_now_to_now(t_tabel *tabel_ptr)
-{
-	struct timeval	t_now;
-	long			now;
-
-	if (gettimeofday(&t_now, NULL) == -1)
-		now = -1;
-	else
-		now = t_now.tv_sec * 1000 + t_now.tv_usec / 1000;
-	tabel_ptr->now = now;
-	if (tabel_ptr->now == -1)
-		tabel_ptr->weltschmerz = 1;
-	return (!tabel_ptr->weltschmerz);
-}
-*/
