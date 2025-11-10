@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 09:21:21 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/10/30 16:51:28 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/07 11:45:26 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	grep_right_fork_first(t_philo *philo_ptr)
 			return (1);
 		}
 		philo_ptr->activity = EATING;
-		philo_ptr->last_meal = philo_ptr->tabel->now;
+		philo_ptr->last_meal = now();
 	}
 	else
 		return (1);
@@ -79,9 +79,10 @@ int	grep_right_fork_first(t_philo *philo_ptr)
 
 int	try_grabbing_forks(t_philo *philo_ptr)
 {
-	if (!philo_ptr->right_fork->fork || !philo_ptr->left_fork->fork
-		|| philo_ptr->tabel->now - philo_ptr->last_meal
-		< philo_ptr->tabel->longest_wait - 2)
+	if (now() - philo_ptr->last_meal < philo_ptr->tabel->time_to_sleep + 1
+		&& philo_ptr->num_meals != 0)
+		usleep (100);
+	if (!fork_is(philo_ptr->right_fork) || !fork_is(philo_ptr->left_fork))
 		return (1);
 	if (philo_ptr->idx % 2)
 	{

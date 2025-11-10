@@ -6,19 +6,13 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:13:28 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/03 11:59:05 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/06 17:52:01 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philos.h"
 
-void	perror_wrong_args(void)
-{
-	printf("wrong input\n");
-	printf("expecdet: number_of_philosophers ");
-	printf("time_to_die time_to_eat time_to_sleep ");
-	printf("[number_each_philo_needs_eat]\n");
-}
+void	perror_wrong_args(void);
 
 int	init_nums(int argc, char **argv, t_tabel *tabelptr)
 {
@@ -40,7 +34,8 @@ int	init_nums(int argc, char **argv, t_tabel *tabelptr)
 	if (argc == 6)
 		tabelptr->number_each_philo_needs_eat = safe_atoi(argv[5]);
 	if (tabelptr->num_philos == ERROR_NUM || tabelptr->time_to_die == ERROR_NUM 
-		|| tabelptr->time_to_eat == ERROR_NUM || tabelptr->time_to_sleep == ERROR_NUM)
+		|| tabelptr->time_to_eat == ERROR_NUM
+		|| tabelptr->time_to_sleep == ERROR_NUM)
 	{
 		perror_wrong_args();
 		return (1);
@@ -51,13 +46,13 @@ int	init_nums(int argc, char **argv, t_tabel *tabelptr)
 int	init_weltschmerz(t_tabel *tabelptr)
 {
 	sem_unlink("/weltschmerz");
-	tabelptr->weltschmerz = sem_open("/weltschmerz", O_CREAT | O_EXCL, 0644, 1);
+	tabelptr->weltschmerz = sem_open("/weltschmerz", O_CREAT | O_EXCL, 0644, 0);
 	if (tabelptr->weltschmerz == SEM_FAILED)
 		return (1);
 	tabelptr->weltschmerz_is_semed = 1;
 	sem_unlink("/weltschmerz_mutex");
-	tabelptr->weltschmerz_mutex = sem_open("/weltschmerz_mutex"
-			, O_CREAT | O_EXCL, 0644, 1);
+	tabelptr->weltschmerz_mutex = sem_open("/weltschmerz_mutex",
+			O_CREAT | O_EXCL, 0644, 1);
 	if (tabelptr->weltschmerz_mutex == SEM_FAILED)
 		return (1);
 	tabelptr->weltschmerz_mutex_is_semed = 1;
@@ -102,7 +97,7 @@ int	malloc_ints(t_tabel *tabelptr)
 	return (0);
 }
 
-int	tabel_set_yourself(int argc, char **argv, t_tabel *tabelptr) 
+int	tabel_set_yourself(int argc, char **argv, t_tabel *tabelptr)
 {
 	if (init_nums(argc, argv, tabelptr) == 1)
 		return (1);

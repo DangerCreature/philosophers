@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 13:26:55 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/02 14:52:11 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/03 18:08:49 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ void	tabel_clear_yourself(t_tabel *tabelptr)
 		{
 			if (tabelptr->pids[idx] != -1)
 			{
-				kill(tabelptr->pids[idx], SIGTERM);
 				waitpid(tabelptr->pids[idx], NULL, 0);
 			}
 			idx ++;

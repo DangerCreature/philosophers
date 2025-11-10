@@ -5,6 +5,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 SRC += helpers1.c
+SRC += helpers2.c
 SRC += main.c
 SRC += init.c
 SRC += cleanup.c

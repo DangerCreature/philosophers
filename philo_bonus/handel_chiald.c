@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 14:46:52 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/03 12:08:31 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/06 17:42:00 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,3 @@ void	chiald_die(t_philo philo)
 	chiald_disconect_frem_world(philo.tabelptr);
 	exit (0);
 }
-

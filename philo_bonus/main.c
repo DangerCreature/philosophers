@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:15:05 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/03 17:52:00 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/06 17:42:18 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,10 @@ int	philos_do_my_bidding(t_tabel *tabelptr)
 			rutine(&philo);
 		if (tabelptr->pids[idx] == -1)
 		{
-			status_update(philo, -1, "fork_failed");
+			status_update(philo, ERROR_NUM, "fork_failed");
 			return (1);
 		}
+		idx ++;
 	}
 	return (0);
 }
@@ -46,4 +47,3 @@ int	main(int argc, char *argv[])
 	tabel_clear_yourself(&tabel);
 	return (0);
 }
-

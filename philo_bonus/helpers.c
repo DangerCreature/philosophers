@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 18:10:15 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/03 12:11:27 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/10 10:24:21 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	status_update(t_philo philo, int status_type, char *error_msg)
 	if (status_type == FORK_GRAB)
 		out = printf("%ld	%d has taken a fork\n", timestmp, philo.idx + 1);
 	else if (status_type == FORK_RETURN)
-		out = printf("%ld	%d has returned a fork\n", timestmp, philo.idx + 1);
+		out = 0;
 	else if (status_type == EATING)
 		out = printf("%ld	%d is eating\n", timestmp, philo.idx + 1);
 	else if (status_type == SLEEPING)
@@ -92,13 +92,9 @@ void	status_update(t_philo philo, int status_type, char *error_msg)
 		out = printf("%ld	%d is thinking\n", timestmp, philo.idx + 1);
 	else if (status_type == DIED)
 		out = printf("%ld	%d died\n", timestmp, philo.idx + 1);
-	else if (status_type == IT_IS_ENOUGH)
-		out = printf("%ld	we have eaten enough\n", timestmp);
 	else if (status_type == ERROR_NUM)
 		out = printf("	Error: %s\n", error_msg);
 	sem_post(philo.tabelptr->write_mutex);
 	if (out < 0)
-	{
 		chiald_die(philo);
-	}
 }

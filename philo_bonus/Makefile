@@ -6,7 +6,7 @@
 #    By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/11/03 11:36:57 by gwolfrum          #+#    #+#              #
-#    Updated: 2025/11/03 11:37:02 by gwolfrum         ###   ########.fr        #
+#    Updated: 2025/11/06 17:53:08 by gwolfrum         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 SRC += main.c
 SRC += helpers.c
+SRC += helpers2.c
 SRC += tabel_set.c
 SRC += tabel_clear.c
 SRC += sem_trywait.c
