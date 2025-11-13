@@ -6,87 +6,113 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 09:21:21 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/07 11:45:26 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:30:08 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philos.h"
 
-int	grep_fork(t_fork *fork_ptr, t_philo philo)
+int	will_i_survive_the_wait(t_philo *philo_ptr)
 {
-	int	out;
+	t_tabel	*tabel;
 
-	out = 0;
-	pthread_mutex_lock(&fork_ptr->mutex);
-	if (fork_ptr->fork)
-		fork_ptr->fork = 0;
-	else
-		out = 1;
-	pthread_mutex_unlock(&fork_ptr->mutex);
-	if (!out)
-		status_update(philo, FORK_GRAB);
-	return (out);
-}
-
-int	let_go_of_fork(t_fork *fork_ptr, t_philo philo)
-{
-	int	out;
-
-	out = 0;
-	pthread_mutex_lock(&fork_ptr->mutex);
-	if (!fork_ptr->fork)
-		fork_ptr->fork = 1;
-	else
-		out = 1;
-	pthread_mutex_unlock(&fork_ptr->mutex);
-	if (!out)
-		status_update(philo, FORK_RETURN);
-	return (out);
-}
-
-int	grep_left_fork_first(t_philo *philo_ptr)
-{
-	if (grep_fork(philo_ptr->left_fork, *philo_ptr) == 0)
+	tabel = philo_ptr->tabel;
+	if ((now() - tabel->time) / tabel->time_to_eat < 2 + tabel->num_philos % 2)
 	{
-		if (grep_fork(philo_ptr->right_fork, *philo_ptr))
-		{
-			let_go_of_fork(philo_ptr->left_fork, *philo_ptr);
-			return (1);
-		}
-		philo_ptr->activity = EATING;
+		if (tabel->num_philos % 2 && philo_ptr->idx == 0)
+			return (2 * tabel->time_to_eat <= tabel->time_to_die);
+		if (philo_ptr->idx % 2 == 0)
+			return (tabel->time_to_eat <= tabel->time_to_die);
+		return (tabel->time_to_die);
+	}
+	if (tabel->num_philos % 2 == 0)
+	{
+		if (tabel->time_to_eat < tabel->time_to_sleep)
+			return (tabel->time_to_eat + tabel->time_to_sleep
+				<= tabel->time_to_die);
+		return (2 * tabel->time_to_eat <= tabel->time_to_die);
 	}
 	else
-		return (1);
-	return (0);
+	{
+		if (tabel->time_to_eat * 2 < tabel->time_to_sleep)
+			return (tabel->time_to_eat + tabel->time_to_sleep
+				<= tabel->time_to_die);
+		return (3 * tabel->time_to_eat <= tabel->time_to_die);
+	}
 }
 
-int	grep_right_fork_first(t_philo *philo_ptr)
+void	wait_to_die(t_philo *philo_ptr)
 {
-	if (grep_fork(philo_ptr->right_fork, *philo_ptr) == 0)
+	while (!weltschmerz_is(philo_ptr->tabel))
 	{
-		if (grep_fork(philo_ptr->left_fork, *philo_ptr))
-		{
-			let_go_of_fork(philo_ptr->right_fork, *philo_ptr);
-			return (1);
-		}
-		philo_ptr->activity = EATING;
-		philo_ptr->last_meal = now();
+		check_death(philo_ptr);
+		usleep(500);
 	}
-	else
-		return (1);
-	return (0);
+}
+
+void	grep_left_fork_first(t_philo *philo_ptr)
+{
+	pthread_mutex_lock(&philo_ptr->left_fork->mutex);
+	if (weltschmerz_is(philo_ptr->tabel))
+	{
+		pthread_mutex_unlock(&philo_ptr->left_fork->mutex);
+		return ;
+	}
+	status_update(*philo_ptr, FORK_GRAB);
+	pthread_mutex_lock(&philo_ptr->right_fork->mutex);
+	if (weltschmerz_is(philo_ptr->tabel))
+	{
+		pthread_mutex_unlock(&philo_ptr->left_fork->mutex);
+		pthread_mutex_unlock(&philo_ptr->right_fork->mutex);
+		return ;
+	}
+	philo_ptr->activity = EATING;
+	status_update(*philo_ptr, FORK_GRAB);
+}
+
+void	grep_right_fork_first(t_philo *philo_ptr)
+{
+	pthread_mutex_lock(&philo_ptr->right_fork->mutex);
+	if (weltschmerz_is(philo_ptr->tabel))
+	{
+		pthread_mutex_unlock(&philo_ptr->right_fork->mutex);
+		return ;
+	}
+	status_update(*philo_ptr, FORK_GRAB);
+	pthread_mutex_lock(&philo_ptr->left_fork->mutex);
+	if (weltschmerz_is(philo_ptr->tabel))
+	{
+		pthread_mutex_unlock(&philo_ptr->left_fork->mutex);
+		pthread_mutex_unlock(&philo_ptr->right_fork->mutex);
+		return ;
+	}
+	philo_ptr->activity = EATING;
+	status_update(*philo_ptr, FORK_GRAB);
 }
 
 int	try_grabbing_forks(t_philo *philo_ptr)
 {
+	if (!will_i_survive_the_wait(philo_ptr)
+		|| philo_ptr->tabel->num_philos == 1)
+	{
+		wait_to_die(philo_ptr);
+		return (1);
+	}
 	if (now() - philo_ptr->last_meal < philo_ptr->tabel->time_to_sleep + 1
 		&& philo_ptr->num_meals != 0)
 		usleep (100);
-	if (!fork_is(philo_ptr->right_fork) || !fork_is(philo_ptr->left_fork))
-		return (1);
-	if (philo_ptr->idx % 2)
+	if (philo_ptr->idx == 0 || !(philo_ptr->idx % 2))
+		grep_left_fork_first(philo_ptr);
+	else
 	{
-		return (grep_left_fork_first(philo_ptr));
+		if (((now() - philo_ptr->tabel->time) / philo_ptr->tabel->time_to_eat)
+			< 2 + philo_ptr->tabel->num_philos % 2)
+		{
+			if (philo_ptr->idx == 0 && philo_ptr->tabel->num_philos % 2)
+				usleep(1000);
+			usleep(4000);
+		}
+		grep_right_fork_first(philo_ptr);
 	}
-	return (grep_right_fork_first(philo_ptr));
+	return (0);
 }

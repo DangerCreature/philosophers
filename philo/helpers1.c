@@ -6,11 +6,12 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 11:05:06 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/10 10:11:25 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:32:22 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philos.h"
+#include <limits.h>
 
 static int	ft_isspace(unsigned char c)
 {
@@ -62,10 +63,10 @@ int	status_update(t_philo philo, int status_type)
 	out = 0;
 	timestmp = now() - philo.tabel->time;
 	pthread_mutex_lock(&philo.tabel->write_mutex);
-	if (status_type == FORK_GRAB)
+	if (weltschmerz_is(philo.tabel))
+		out = -1;
+	else if (status_type == FORK_GRAB)
 		out = printf("%ld	%d has taken a fork\n", timestmp, philo.idx + 1);
-	else if (status_type == FORK_RETURN)
-		out = 0;
 	else if (status_type == EATING)
 		out = printf("%ld	%d is eating\n", timestmp, philo.idx + 1);
 	else if (status_type == SLEEPING)
@@ -73,15 +74,18 @@ int	status_update(t_philo philo, int status_type)
 	else if (status_type == THINKING)
 		out = printf("%ld	%d is thinking\n", timestmp, philo.idx + 1);
 	else if (status_type == DIED)
+	{
 		out = printf("%ld	%d died\n", timestmp, philo.idx + 1);
+		set_weltschmerz(philo.tabel);
+	}
 	pthread_mutex_unlock(&philo.tabel->write_mutex);
 	return (out < 0);
 }
 
-long	now(void)
+long long	now(void)
 {
 	struct timeval	t_now;
-	long			now;
+	long long		now;
 
 	if (gettimeofday(&t_now, NULL) == -1)
 		now = -1;

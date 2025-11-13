@@ -6,7 +6,7 @@
 /*   By: gwolfrum <gwolfrum@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 15:24:17 by gwolfrum          #+#    #+#             */
-/*   Updated: 2025/11/07 14:06:47 by gwolfrum         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:27:09 by gwolfrum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,13 @@ struct s_philo
 # define IT_IS_ENOUGH 6
 # define ERROR_NUM -85505
 
-void	tabel_clear_yourself(t_tabel *tabel);
-int		status_update(t_philo philo, int status_type);
-long	now(void);
-int		let_go_of_fork(t_fork *fork_ptr, t_philo philo);
-int		weltschmerz_is(t_tabel *tabelptr);
-void	set_weltschmerz(t_tabel *tabelptr);
-int		fork_is(t_fork *fork);
+long long	now(void);
+void		tabel_clear_yourself(t_tabel *tabel);
+int			status_update(t_philo philo, int status_type);
+int			let_go_of_fork(t_fork *fork_ptr, t_philo philo);
+int			weltschmerz_is(t_tabel *tabelptr);
+void		set_weltschmerz(t_tabel *tabelptr);
+int			fork_is(t_fork *fork);
+int			check_death(t_philo *philo_ptr);
 
 #endif
